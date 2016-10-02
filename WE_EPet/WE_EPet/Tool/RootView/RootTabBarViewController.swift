@@ -18,7 +18,7 @@ let dogImageArray = ["cat_tab_1","cat_tab_2","","cat_tab_4","cat_tab_5"]
 let catImageArray = ["dog_tab_1","dog_tab_2","","dog_tab_4","dog_tab_5"]
 let titleNameArray = ["首页","分类","","购物车","我的E宠"]
 
-class RootTabBarViewController: UITabBarController {
+class RootTabBarViewController: UITabBarController,UITabBarControllerDelegate {
     
     var type : ImageType?{
         didSet{
@@ -43,6 +43,15 @@ class RootTabBarViewController: UITabBarController {
         return imageView
     }()
     
+    lazy var diffDogAndCatView : DiffDogAndCatView = {
+        let diffView = DiffDogAndCatView()
+        diffView.resultBlock = {(type) in
+          print(type)
+        }
+        return diffView
+    }()
+    
+    
     //selectIndex set方法
     override var selectedIndex: Int{
         willSet{
@@ -55,6 +64,8 @@ class RootTabBarViewController: UITabBarController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.delegate = self
         
         self.tabBar.addSubview(self.middleImageView)
         
@@ -89,5 +100,20 @@ class RootTabBarViewController: UITabBarController {
             item.image = normalImage
             item.selectedImage = selectImage
         }
+    }
+}
+
+extension RootTabBarViewController{
+    @objc(tabBarController:shouldSelectViewController:) func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        if viewController.isKind(of: UINavigationController.classForCoder()) {
+            return true
+        }
+        //MARK: 处理狗狗和猫的区别
+        if self.diffDogAndCatView.diffHidden == false {
+            self.diffDogAndCatView.showDiffView()
+        }else{
+            self.diffDogAndCatView.hiddenView()
+        }
+        return false
     }
 }
