@@ -117,3 +117,26 @@ extension RootTabBarViewController{
         return false
     }
 }
+
+
+//获取当前视图
+extension RootViewController{
+    static func currentViewController()->UIViewController{
+        let rootViewController = UIApplication.shared.keyWindow?.rootViewController
+        return self.currentViewControllerFrom(controller: rootViewController!)
+    }
+    
+    static func currentViewControllerFrom(controller: UIViewController) ->UIViewController{
+        if (controller.isKind(of: UINavigationController.classForCoder())) {
+            let navigation: UINavigationController = controller as! UINavigationController
+            return self.currentViewControllerFrom(controller: navigation.viewControllers.last!)
+        }else if (controller.isKind(of: UITabBarController.classForCoder())) {
+            let tabbar: UITabBarController = controller as! UITabBarController
+            return self.currentViewControllerFrom(controller: tabbar.selectedViewController!)
+        }else if (controller.presentedViewController != nil) {
+            return self.currentViewControllerFrom(controller: controller.presentedViewController!)
+        }else{
+            return controller
+        }
+    }
+}

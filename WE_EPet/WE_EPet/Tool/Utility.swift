@@ -20,7 +20,7 @@ func RGBA(r: Float, g: Float, b: Float, a:Float) ->UIColor{
     return UIColor.init(colorLiteralRed: r, green: g, blue: b, alpha: a)
 }
 
-func RGB(r: Float, g: Float, b: Float, a:Float) ->UIColor{
+func RGB(r: Float, g: Float, b: Float) ->UIColor{
     return RGBA(r: r, g: g, b: b, a: 1.0)
 }
 
