@@ -7,51 +7,75 @@
 //
 
 import UIKit
+import YYKit
 
-typealias CellClickIndex = (Int) ->Void
+private var KeyWord = 0
+private let ButtonWidth = 60
+private let ButtonHeight = 60
 
 class AutoScrollTableViewCell: UITableViewCell {
     
-    lazy var scrollImageView :WE_AutoScrollView = {
-        
-       let imageView = WE_AutoScrollView.init(frame: CGRect.init(x: 0, y: 0, width: SCREEN_WIDTH, height: self.bounds.height-40), placceHolder: nil, remoteImageUrls: [], selectImageAction: { (index) in
-            if let _ = self.clickIndex{
-                self.clickIndex!(index)
-            }
-        });
-        imageView.tag = 100
-        return imageView
-    }()
     var scrollMain : UIScrollView?
-    var clickIndex :CellClickIndex?
-    
-    
-    
     
     var model : AutoScrollModel?
     
     
     func configData(model:AutoScrollModel) {
+        self.model = model
         
         let view = self.viewWithTag(100)
         view?.removeFromSuperview()
         
         //轮播图
-        self.addSubview(self.imageView!)
-        
-        let array : Array = model.menuList!
-        for index in 0...array.count {
-            let dict = array[index] as NSDictionary
-            let button = UIButton.init(frame: CGRect(x: index*40, y: 0, width: 40, height: 40));
+        var imageListArray = [NSString]()
+        for dict in model.imageList! {
+            imageListArray.append(dict["src"] as! NSString)
         }
         
+        let scrollImage = WE_AutoScrollView.init(frame: CGRect.init(x: 0, y: 0, width: SCREEN_WIDTH, height: 150), placceHolder: UIImage(named:"pay_done"), remoteImageUrls: imageListArray as Array<String>?, selectImageAction: { (index) in
+            
+            let dict : NSDictionary = (self.model?.imageList![index])!
+            let webView = CommonWebViewController()
+            webView.webUrl = NSURL(string: dict["wap_url"] as! String) as URL?
+            RootViewController.currentViewController().hidesBottomBarWhenPushed = true
+            RootViewController.currentViewController().navigationController?.pushViewController(webView, animated: true)
+            
+        });
+        scrollImage.backgroundColor = UIColor.blue
+        scrollImage.tag = 100
+        self.addSubview(scrollImage)
+        
+        
+        //按钮
+        let array : Array = model.menuList!
+        var width = 0
+        for index in 0..<array.count {
+            width += ButtonWidth
+            
+            let dict = array[index] as NSDictionary
+            let button = UIButton.init(frame: CGRect(x: index*ButtonWidth, y: 0, width: ButtonWidth, height: ButtonHeight));
+            button.setImageWith(NSURL(string: dict["hover_image"] as! String) as URL?, for: .normal, placeholder: UIImage(named: "pay_done"))
+            objc_setAssociatedObject(button, &KeyWord, dict, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            button.addTarget(self, action: #selector(AutoScrollTableViewCell.buttonClick(button:)), for: .touchUpInside)
+            self.scrollMain?.addSubview(button)
+        }
+        self.scrollMain?.contentSize = CGSize(width: width, height: 0)
+        
+    }
+    
+    func buttonClick(button:UIButton) {
+        let dict : NSDictionary = objc_getAssociatedObject(button, &KeyWord) as! NSDictionary
+        let webView = CommonWebViewController()
+        webView.webUrl = NSURL(string: dict["wap_url"] as! String) as URL?
+        RootViewController.currentViewController().hidesBottomBarWhenPushed = true
+        RootViewController.currentViewController().navigationController?.pushViewController(webView, animated: true)
     }
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
+        self.selectionStyle = .none
         //按钮
-        scrollMain = UIScrollView.init(frame: CGRect(x: 0, y: self.bounds.height-40, width: SCREEN_WIDTH, height: 40))
+        scrollMain = UIScrollView.init(frame: CGRect(x: 0, y: 150, width: Int(SCREEN_WIDTH), height: ButtonHeight))
         self.addSubview(scrollMain!)
     }
     

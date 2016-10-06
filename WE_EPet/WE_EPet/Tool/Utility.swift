@@ -24,6 +24,8 @@ func RGB(r: Float, g: Float, b: Float) ->UIColor{
     return RGBA(r: r, g: g, b: b, a: 1.0)
 }
 
+let DefaultGreenColor = RGB(r: 50.0/255.0, g: 193.0/255.0, b: 108.0/255.0)
+
 //MARK: 字体
 let DEFAULT_TITLE_FONT = UIFont.systemFont(ofSize: 15)
 let DEFAULT_SUBTITLE_FONT = UIFont.systemFont(ofSize: 13)

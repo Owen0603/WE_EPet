@@ -25,7 +25,7 @@ class HomeIndexViewController: RootViewController,UISearchBarDelegate {
     var textField : UISearchBar?
     var messageButton : UIButton?
     lazy var tabView : UITableView = {
-      let tab = UITableView(frame: CGRect(x: 0, y: 64, width: SCREEN_WIDTH, height: SCREEN_HEIGHT-64), style: .plain)
+      let tab = UITableView(frame: CGRect(x: 0, y: 70, width: SCREEN_WIDTH, height: SCREEN_HEIGHT-70), style: .plain)
         tab.delegate = self
         tab.dataSource = self
         tab.register(AutoScrollTableViewCell.self, forCellReuseIdentifier: cellID)
@@ -39,6 +39,7 @@ class HomeIndexViewController: RootViewController,UISearchBarDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = RGB(r: 223.0/255.0, g: 223.0/255.0, b: 223.0/255.0)
         self.navigationController?.isNavigationBarHidden = true
         self.topInputView()
         self.requstData()
@@ -46,10 +47,11 @@ class HomeIndexViewController: RootViewController,UISearchBarDelegate {
     
     //顶部输入框
     func topInputView() {
-        let topView = UIView.init(frame: CGRect(x: 0, y: 20, width: SCREEN_WIDTH, height: 50))
+        let topView = UIView.init(frame: CGRect(x: 0, y: 0, width: SCREEN_WIDTH, height: 70))
+        topView.backgroundColor = UIColor.white
         self.view.addSubview(topView)
         
-        areaButton = UIButton.init(frame: CGRect(x: 0, y: 0, width: 70, height: 50))
+        areaButton = UIButton.init(frame: CGRect(x: 0, y: 20, width: 70, height: 50))
         areaButton?.setTitleColor(RGB(r: 50.0/255.0, g: 193.0/255.0, b: 108.0/255.0), for: .normal)
         areaButton?.titleLabel?.font = UIFont.systemFont(ofSize: 14)
         areaButton?.setTitle("江苏", for: .normal)
@@ -59,7 +61,7 @@ class HomeIndexViewController: RootViewController,UISearchBarDelegate {
         areaButton?.addTarget(self, action: #selector(HomeIndexViewController.areaSelect), for: .touchUpInside)
         topView.addSubview(areaButton!)
         
-        textField = UISearchBar.init(frame: CGRect(x: 70, y: 5, width: SCREEN_WIDTH-120, height: 40))
+        textField = UISearchBar.init(frame: CGRect(x: 70, y: 25, width: SCREEN_WIDTH-120, height: 40))
         textField?.backgroundColor = UIColor.white
         textField?.delegate = self
         textField?.placeholder = "搜索宝贝"
@@ -72,9 +74,13 @@ class HomeIndexViewController: RootViewController,UISearchBarDelegate {
         textField?.backgroundColor = UIColor.clear
         
         
-        messageButton = UIButton.init(frame: CGRect(x: SCREEN_WIDTH-50, y: 0, width: 50, height: 50))
+        messageButton = UIButton.init(frame: CGRect(x: SCREEN_WIDTH-50, y: 20, width: 50, height: 50))
         messageButton?.setImage(UIImage(named: "user_mesage"), for: .normal)
         topView.addSubview(messageButton!)
+        
+        let view = UIView.init(frame: CGRect(x: 0, y: 69.5, width: SCREEN_WIDTH, height: 0.5))
+        view.backgroundColor = UIColor.lightGray
+        topView.addSubview(view)
     }
     
     func getImageWithColor(color: UIColor) -> UIImage {
@@ -123,6 +129,10 @@ extension HomeIndexViewController{
 extension HomeIndexViewController: UITableViewDelegate,UITableViewDataSource{
     @available(iOS 2.0, *)
     
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        self.view.endEditing(true)
+    }
+    
     func numberOfSections(in tableView: UITableView) -> Int {
         return 3
     }
@@ -152,7 +162,7 @@ extension HomeIndexViewController: UITableViewDelegate,UITableViewDataSource{
         switch indexPath.section {
         case 0:
             //轮播图
-            return 200
+            return 215
         case 1:
             //特卖按钮
             return 50

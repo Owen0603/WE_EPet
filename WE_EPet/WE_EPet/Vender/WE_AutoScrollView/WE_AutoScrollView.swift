@@ -55,7 +55,7 @@ class WE_AutoScrollView: UIView,UIScrollViewDelegate {
         self.placeHolderImage = placeHolderImage
         self.didSelectedImageAction = imageDidSelectAction
         self.imageUrlArray = images
-        
+        self.createScrollView()
     }
     
     //MARK: loacl image

@@ -46,16 +46,16 @@ class CommonWebViewController: UIViewController {
     }()
     
     private lazy var closeItem : UIBarButtonItem = {
+        
         let closeItem = UIBarButtonItem.init(title: "关闭", style: .plain, target: self, action: #selector(rightItemAction))
-        closeItem.tintColor = UIColor.white
-        closeItem.setTitleTextAttributes([NSFontAttributeName:UIFont.boldSystemFont(ofSize: 16)], for: .normal)
+        closeItem.tintColor = DefaultGreenColor
         return closeItem
     }()
     
     private lazy var backItem : UIBarButtonItem = {
-        let backItem = UIBarButtonItem.init(title: "返回", style: .plain, target: self, action: #selector(backItemAction))
-        backItem.tintColor = UIColor.white
-        backItem.setTitleTextAttributes([NSFontAttributeName:UIFont.boldSystemFont(ofSize: 16)], for: .normal)
+    
+        let backItem = UIBarButtonItem.init(image: UIImage(named:"return_app"), style: .plain, target: self, action: #selector(backItemAction))
+        backItem.tintColor = DefaultGreenColor
         return backItem
     }()
     
@@ -71,7 +71,7 @@ class CommonWebViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    
+        self.navigationController?.isNavigationBarHidden = false
         self.title = self.navTitle
         self.view.addSubview(self.webView)
         
@@ -114,7 +114,7 @@ class CommonWebViewController: UIViewController {
     }
     
     func loadNavgationItem() {
-        if self.presentationController != nil && (self.navigationController?.viewControllers.count)!<=1 {
+        if self.presentationController != nil && self.navigationController != nil && (self.navigationController?.viewControllers.count)!<=1 {
             self.configNavigationCloseItem()
         }else{
             self.navigationItem.leftBarButtonItems = self.webView.canGoBack == true ? [self.backItem,self.closeItem] : [self.backItem]
