@@ -11,7 +11,7 @@ import UIKit
 class AutoScrollModel: NSObject {
     var imageList : [NSDictionary]?   //轮播图
     var menuList : [NSDictionary]?    //特卖按钮
-    var recommendGoods : [NSDictionary]? //物品列表
+    var worthbuyList : [NSDictionary]? //物品列表
     var hotComments : [NSDictionary]?   //口碑评价
  
     
@@ -28,7 +28,7 @@ class AutoScrollModel: NSObject {
              model.imageList = resultDict["advarr_four"] as! [NSDictionary]?
         }
         
-        model.recommendGoods = dict["recommend_goods"] as! [NSDictionary]?
+        model.worthbuyList = dict["worthbuy"] as! [NSDictionary]?
         
         model.hotComments = dict["hotcomments"] as! [NSDictionary]?
         return model

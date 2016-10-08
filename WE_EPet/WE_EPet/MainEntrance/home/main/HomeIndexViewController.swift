@@ -11,12 +11,16 @@ import Alamofire
 
 let URL_Dog = "http://cdnapi.epet.com/appmall/main.html?do=index201602&appname=epetmall&duuid=AAEEDCD1-8804-45FA-B058-3526E1557649&iphone_model=iphone5&my_placeid=24&passkey=891bcda0bc55f0717607c5928b917ad5&pet_type=dog&postsubmit=r9b8s7m4&system=ios&version=3.400000"
 
+let URL_Dog_Worth = "http://api.epet.com/appmall/v3/main.html?do=getDynamic&appname=epetmall&duuid=AAEEDCD1-8804-45FA-B058-3526E1557649&iphone_model=iphone5&my_placeid=24&passkey=00bb2c9bba1c8d213e16f042bb1a56db&pet_type=cat&postsubmit=r9b8s7m4&system=ios&version=3.400000"
+
 let URL_Cat = "http://api.epet.com/appmall/v3/main.html?do=getDynamic&appname=epetmall&duuid=AAEEDCD1-8804-45FA-B058-3526E1557649&iphone_model=iphone5&my_placeid=24&passkey=891bcda0bc55f0717607c5928b917ad5&pet_type=dog&postsubmit=r9b8s7m4&system=ios&version=3.400000"
 
 let ImageURL = "http://i.epetbar.com/2015-12/07/16/21064d11879da67623737d891691ee5b.jpg-222-226.png"
 
 let cellID = "cellID"
-
+let recommondCellID = "recomdCell"
+let buttonListCellID = "buttonCell"
+let goodCellID = "goodCell"
 
 class HomeIndexViewController: RootViewController,UISearchBarDelegate {
 
@@ -25,10 +29,14 @@ class HomeIndexViewController: RootViewController,UISearchBarDelegate {
     var textField : UISearchBar?
     var messageButton : UIButton?
     lazy var tabView : UITableView = {
-      let tab = UITableView(frame: CGRect(x: 0, y: 70, width: SCREEN_WIDTH, height: SCREEN_HEIGHT-70), style: .plain)
+      let tab = UITableView(frame: CGRect(x: 0, y: 70, width: SCREEN_WIDTH, height: SCREEN_HEIGHT-120), style: .plain)
+        tab.separatorStyle = .none
         tab.delegate = self
         tab.dataSource = self
         tab.register(AutoScrollTableViewCell.self, forCellReuseIdentifier: cellID)
+        tab.register(UINib.init(nibName: "RecommondTableViewCell", bundle: Bundle.main), forCellReuseIdentifier: recommondCellID)
+        tab.register(UINib.init(nibName: "ButtonListTableViewCell", bundle: Bundle.main), forCellReuseIdentifier: buttonListCellID)
+        tab.register(UINib.init(nibName: "GoodCommondTableViewCell", bundle: Bundle.main), forCellReuseIdentifier: goodCellID)
         return tab
     }()
     
@@ -40,9 +48,13 @@ class HomeIndexViewController: RootViewController,UISearchBarDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = RGB(r: 223.0/255.0, g: 223.0/255.0, b: 223.0/255.0)
-        self.navigationController?.isNavigationBarHidden = true
         self.topInputView()
         self.requstData()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.isNavigationBarHidden = true
     }
     
     //顶部输入框
@@ -69,7 +81,7 @@ class HomeIndexViewController: RootViewController,UISearchBarDelegate {
         let seachTextFeild:UITextField = textField?.subviews.first?.subviews.last as! UITextField
         seachTextFeild.backgroundColor = RGB(r: 220.0/255.0, g: 220.0/255.0, b: 220.0/255.0)
         seachTextFeild.textColor = UIColor.lightGray
-        let searchBarBg: UIImage = self.getImageWithColor(color: RGB(r: 255, g: 255, b: 255))
+        let searchBarBg: UIImage = UIImage.getImageWithColor(color: RGB(r: 255.0, g: 255.0, b: 255.0))
         textField?.setBackgroundImage(searchBarBg, for: .any, barMetrics: .default)
         textField?.backgroundColor = UIColor.clear
         
@@ -112,14 +124,19 @@ class HomeIndexViewController: RootViewController,UISearchBarDelegate {
 //网络请求
 extension HomeIndexViewController{
     func requstData() {
-        Alamofire.request(URL_Dog).responseJSON { response in
+        Alamofire.request(URL_Dog).responseJSON { response1 in
             
-            
-            let dict : Any? = response.result.value as Any?
-            if let resultDict :Dictionary = dict as? Dictionary<String, AnyObject>{
-                self.model = AutoScrollModel.modelWithDict(dict: resultDict)
-                self.view.addSubview(self.tabView)
-                self.tabView.reloadData()
+            Alamofire.request(URL_Dog_Worth).responseJSON { response2 in
+                
+                let dict1 : Any? = response1.result.value as Any?
+                let dict2 : Any? = response2.result.value as Any?
+                if let resultDict1 :Dictionary = dict1 as? Dictionary<String, AnyObject>{
+                    let resultDict2 :Dictionary = (dict2 as? Dictionary<String, AnyObject>)!
+                    self.model = AutoScrollModel.modelWithDict(dict: resultDict1)
+                    self.model?.worthbuyList = resultDict2["worthbuy"] as! [NSDictionary]?
+                    self.view.addSubview(self.tabView)
+                    self.tabView.reloadData()
+                }
             }
         }
     }
@@ -134,7 +151,7 @@ extension HomeIndexViewController: UITableViewDelegate,UITableViewDataSource{
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 4
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -147,8 +164,8 @@ extension HomeIndexViewController: UITableViewDelegate,UITableViewDataSource{
             return 1
         case 2:
             //物品列表
-            let array = self.model?.recommendGoods
-            return (array?.count)!
+            let array = self.model?.worthbuyList
+            return (array?.count)!/2
         case 3:
             //口碑评价
             let array = self.model?.hotComments
@@ -165,13 +182,13 @@ extension HomeIndexViewController: UITableViewDelegate,UITableViewDataSource{
             return 215
         case 1:
             //特卖按钮
-            return 50
+            return 80
         case 2:
             //物品列表
-            return 50
+            return 255
         case 3:
             //口碑评价
-            return 50
+            return 154
         default:
             return 0
         }
@@ -185,17 +202,23 @@ extension HomeIndexViewController: UITableViewDelegate,UITableViewDataSource{
             return cell
         }else if indexPath.section == 1 {
             
-            let cell = UITableViewCell(style: .default, reuseIdentifier: "12")
+            let cell = tableView.dequeueReusableCell(withIdentifier: buttonListCellID) as! ButtonListTableViewCell
             return cell
             
         }else if indexPath.section == 2 {
             
-            let cell = UITableViewCell(style: .default, reuseIdentifier: "12")
+            let worthBuyList = self.model?.worthbuyList
+            let leftDict = worthBuyList?[indexPath.row*2]
+            let rightDict = worthBuyList?[indexPath.row*2+1]
+            
+            let cell = tableView.dequeueReusableCell(withIdentifier: recommondCellID) as! RecommondTableViewCell
+            cell.configData(leftDict: leftDict!, rightDict: rightDict!)
             return cell
             
         }else{
-           
-            let cell = UITableViewCell(style: .default, reuseIdentifier: "12")
+            let goodsList = self.model?.hotComments
+            let cell = tableView.dequeueReusableCell(withIdentifier: goodCellID) as! GoodCommondTableViewCell
+            cell.configData(dict: (goodsList?[indexPath.row])! as NSDictionary)
             return cell
         }
     }

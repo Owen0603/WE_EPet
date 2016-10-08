@@ -35,9 +35,12 @@ class AutoScrollTableViewCell: UITableViewCell {
         let scrollImage = WE_AutoScrollView.init(frame: CGRect.init(x: 0, y: 0, width: SCREEN_WIDTH, height: 150), placceHolder: UIImage(named:"pay_done"), remoteImageUrls: imageListArray as Array<String>?, selectImageAction: { (index) in
             
             let dict : NSDictionary = (self.model?.imageList![index])!
+            let subDict = dict["param"] as! NSDictionary
+            let string = subDict["param"] as! String
             let webView = CommonWebViewController()
-            webView.webUrl = NSURL(string: dict["wap_url"] as! String) as URL?
-            RootViewController.currentViewController().hidesBottomBarWhenPushed = true
+            webView.webUrl = NSURL(string: string) as URL?
+            webView.navTitle = subDict["mode"] as! String
+            webView.hidesBottomBarWhenPushed = true
             RootViewController.currentViewController().navigationController?.pushViewController(webView, animated: true)
             
         });
@@ -60,14 +63,14 @@ class AutoScrollTableViewCell: UITableViewCell {
             self.scrollMain?.addSubview(button)
         }
         self.scrollMain?.contentSize = CGSize(width: width, height: 0)
-        
+        self.scrollMain?.showsHorizontalScrollIndicator = false
     }
     
     func buttonClick(button:UIButton) {
         let dict : NSDictionary = objc_getAssociatedObject(button, &KeyWord) as! NSDictionary
         let webView = CommonWebViewController()
         webView.webUrl = NSURL(string: dict["wap_url"] as! String) as URL?
-        RootViewController.currentViewController().hidesBottomBarWhenPushed = true
+        webView.hidesBottomBarWhenPushed = true
         RootViewController.currentViewController().navigationController?.pushViewController(webView, animated: true)
     }
     
@@ -78,6 +81,27 @@ class AutoScrollTableViewCell: UITableViewCell {
         scrollMain = UIScrollView.init(frame: CGRect(x: 0, y: 150, width: Int(SCREEN_WIDTH), height: ButtonHeight))
         self.addSubview(scrollMain!)
     }
+    
+//    func htmlTitleName(index: NSInteger) -> String {
+//        switch index {
+//        case 0:
+//            return "全球特卖"
+//        case 1:
+//            return "全球特卖"
+//        case 0:
+//            return "全球特卖"
+//        case 0:
+//            return "全球特卖"
+//        case 0:
+//            return "全球特卖"
+//        case 0:
+//            return "全球特卖"
+//        case 0:
+//            return "全球特卖"
+//        default:
+//            <#code#>
+//        }
+//    }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
