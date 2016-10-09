@@ -29,10 +29,9 @@ private let CellID2 = "cellID2"
 class MineViewController: RootViewController,UITableViewDelegate,UITableViewDataSource {
 
     lazy var tabView : UITableView = {
-        let tab = UITableView.init(frame: self.view.bounds, style: .plain)
+        let tab = UITableView.init(frame: self.view.bounds, style: .grouped)
         tab.delegate = self
         tab.dataSource = self
-        tab.backgroundColor = UIColor.lightGray
         tab.register(UINib.init(nibName: "MineTopTableViewCell", bundle: Bundle.main), forCellReuseIdentifier: CellID1)
         tab.register(UINib.init(nibName: "SettingTableViewCell", bundle: Bundle.main), forCellReuseIdentifier: CellID2)
         return tab
